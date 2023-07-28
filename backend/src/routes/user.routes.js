@@ -6,14 +6,51 @@ const getOneUserController = require("../controllers/users/getOneUser.controller
 const updateUserController = require("../controllers/users/updateUser.controller");
 const deleteUserController = require("../controllers/users/deleteUser.controller");
 
-userRoutes.get("/users/", createUserController);
+const {
+  userSchema,
+  updateUserSchema,
+} = require("../serializers/users.serializer");
 
-userRoutes.post("/users/", listUsersController);
+const authMiddleware = require("../middlewares/auth.middleware");
+const validateDataMiddleware = require("../middlewares/validateData.middleware");
+const isOwnerMiddleware = require("../middlewares/isOwner.middleware");
+const verifyIdExistsMiddleware = require("../middlewares/verifyIdExists.middleware");
+const validateIdMiddleware = require("../middlewares/validateId.middleware");
 
-userRoutes.get("/users/:id", getOneUserController);
+userRoutes.post(
+  "/users",
+  validateDataMiddleware(userSchema),
+  createUserController
+);
 
-userRoutes.patch("/users/:id", updateUserController);
+userRoutes.get("/users", authMiddleware, listUsersController);
 
-userRoutes.delete("/users/:id", deleteUserController);
+userRoutes.get(
+  "/users/:id",
+  authMiddleware,
+  validateIdMiddleware,
+  verifyIdExistsMiddleware,
+  isOwnerMiddleware,
+  getOneUserController
+);
+
+userRoutes.patch(
+  "/users/:id",
+  authMiddleware,
+  validateIdMiddleware,
+  verifyIdExistsMiddleware,
+  isOwnerMiddleware,
+  validateDataMiddleware(updateUserSchema),
+  updateUserController
+);
+
+userRoutes.delete(
+  "/users/:id",
+  authMiddleware,
+  validateIdMiddleware,
+  verifyIdExistsMiddleware,
+  isOwnerMiddleware,
+  deleteUserController
+);
 
 module.exports = userRoutes;
