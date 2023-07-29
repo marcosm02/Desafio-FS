@@ -1,10 +1,9 @@
-import { StyledButtonDefPrimary } from "../../styles/button";
+import { StyledModalEdit } from "./style";
 import { StyledInput } from "../../styles/input";
-import { StyledDivRegister } from "./style";
+import { StyledButtonDefPrimary } from "../../styles/button";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { UserContext } from "../../contexts/userContext";
 
@@ -14,72 +13,64 @@ const schema = yup.object({
     .string()
     .email("It must be a valid email")
     .required("Email is required"),
-  password: yup.string().required("Password is required"),
+  password: yup.string(),
 });
 
-export const Register = () => {
+export const ModalEditProfile = () => {
   const {
-    register,
     handleSubmit,
+    register,
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema) });
 
-  const { registerUser } = useContext(UserContext);
+  const { user, changeEditProfileModal, editUser } = useContext(UserContext);
 
   return (
-    <StyledDivRegister>
-      <div className="logoBox">
-        <h1>DFS</h1>
-
-        <Link to="/">Return</Link>
-      </div>
-      <div className="registerBox">
-        <div className="titleBox">
-          <h2>Create your account</h2>
+    <StyledModalEdit>
+      <div className="modalBox">
+        <div className="modalBox__title">
+          <h3>Profile details</h3>
+          <button onClick={changeEditProfileModal}>X</button>
         </div>
-
-        <form onSubmit={handleSubmit(registerUser)}>
-          <div className="formBox">
+        <div className="modalBox__form">
+          <form onSubmit={handleSubmit(editUser)}>
             <label htmlFor="name">Name</label>
-
             <StyledInput
               type="text"
               id="name"
-              placeholder="Enter your name here"
+              placeholder="Enter the name"
+              defaultValue={user?.name}
               {...register("name")}
             />
             <small>{errors.name?.message}</small>
-          </div>
 
-          <div className="formBox">
             <label htmlFor="email">Email</label>
-
             <StyledInput
               type="text"
               id="email"
-              placeholder="Enter your email here"
+              placeholder="Enter the email"
+              defaultValue={user?.email}
               {...register("email")}
             />
             <small>{errors.email?.message}</small>
-          </div>
 
-          <div className="formBox">
-            <label htmlFor="password">Password</label>
-
+            <label htmlFor="telephone">Password</label>
             <StyledInput
-              type="password"
+              type="text"
               id="password"
-              placeholder="Enter your password here"
+              placeholder="Enter the password"
               {...register("password")}
             />
             <small>{errors.password?.message}</small>
-          </div>
 
-          <StyledButtonDefPrimary type="submit">
-            Register
-          </StyledButtonDefPrimary>
-        </form>
+            <div className="buttonBox">
+              <StyledButtonDefPrimary type="submit" id="btnSaveAlt">
+                Save editions
+              </StyledButtonDefPrimary>
+            </div>
+          </form>
+        </div>
       </div>
-    </StyledDivRegister>
+    </StyledModalEdit>
   );
 };
